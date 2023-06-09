@@ -3,7 +3,6 @@
 
 from fastapi import APIRouter, FastAPI
 from api.v1.api import api_router
-
 from core.configs import settings
 
 app = FastAPI(title='YourBook - Para todos aqueles que gostam de ler!')
