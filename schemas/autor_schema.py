@@ -5,3 +5,7 @@ class AutorSchema(BaseModel):
     
     id: Optional[int] = None
     nome: str
+    
+    class Config:
+        orm_mode = True
+        
