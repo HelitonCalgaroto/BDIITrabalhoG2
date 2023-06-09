@@ -1,2 +1,2 @@
-from categoria_models import Categoria
-from autor_models import Autor
+from models.livro_model import LivroModel
+from models.emprestimo_model import EmprestimoModel
