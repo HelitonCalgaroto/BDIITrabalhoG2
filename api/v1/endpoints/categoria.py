@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response
 from typing import List
 from sqlalchemy.future import select
 from core.deps import get_session
-from sqlalchemy.exc import IntegrityError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.categoria_schema import CategoriaSchema
@@ -36,8 +35,8 @@ async def post_categoria(categoria: CategoriaSchema,
             response_model=None,
             status_code=status.HTTP_202_ACCEPTED)
 async def put_categoria(categoria_id: int,
-                    categoria: CategoriaSchema,
-                    db: AsyncSession = Depends(get_session)):
+                        categoria: CategoriaSchema,
+                        db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(CategoriaModel).filter(CategoriaModel.id == categoria_id)
         result = await session.execute(query)

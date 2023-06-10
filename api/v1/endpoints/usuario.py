@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.usuario_schema import UsuarioSchemaCreate, UsuarioSchemaUp, UsuarioSchemaBase
-from models.usuarios_model import UsuarioModel
+from models.usuario_model import UsuarioModel
 
 from core.deps import get_session, get_current_user
 from core.security import gerar_hash_senha
@@ -24,8 +24,7 @@ async def post_usuario(usuario: UsuarioSchemaCreate, db: AsyncSession = Depends(
     novo_usuario: UsuarioModel = UsuarioModel(
         nome = usuario.nome,
         email = usuario.email,
-        senha = gerar_hash_senha,
-        )
+        senha = gerar_hash_senha(usuario.senha))
     async with db as session:
         try:
             session.add(novo_usuario)

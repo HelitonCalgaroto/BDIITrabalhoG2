@@ -9,7 +9,7 @@ from core.configs import settings
 
 from core.database import Session
 from core.auth import oauth2_schema
-from models.usuarios_model import UsuarioModel
+from models.usuario_model import UsuarioModel
 
 class TokenData(BaseModel):
     username: Optional[str] = None

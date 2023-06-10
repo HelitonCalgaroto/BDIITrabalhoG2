@@ -5,7 +5,7 @@ class UsuarioSchemaBase(BaseModel):
     id: Optional[int] = None
     nome: str
     email: str
-    senha: str
+   
     
     class Config:
         orm_mode = True
@@ -17,4 +17,3 @@ class UsuarioSchemaUp(UsuarioSchemaBase):
     
 class UsuarioSchemaCreate(UsuarioSchemaBase):
     senha: str
-    

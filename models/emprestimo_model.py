@@ -1,3 +1,4 @@
+from models.livro_model import LivroModel
 from sqlalchemy import Column, ForeignKey, Integer, DateTime
 from sqlalchemy.orm import relationship
 from core.configs import settings
@@ -11,5 +12,5 @@ class EmprestimoModel(settings.DBBaseModel):
    data_emprestimo = Column(DateTime)
    data_devolucao = Column(DateTime)
 
-   livro = relationship("LivroModel", back_populates ="emprestimo")
-   usuario = relationship("UsuarioModel", back_populates ="emprestimo")
+   livro = relationship("LivroModel", back_populates ="emprestimo", lazy ='joined')
+   usuario = relationship("UsuarioModel", back_populates ="emprestimos", lazy ='joined')
