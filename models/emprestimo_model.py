@@ -9,7 +9,7 @@ class EmprestimoModel(settings.DBBaseModel):
    id_livro = Column(Integer, ForeignKey("livro.id"))
    id_usuario = Column(Integer, ForeignKey("usuario.id"))
    data_emprestimo = Column(DateTime)
-   data_devolucao= Column(DateTime)
+   data_devolucao = Column(DateTime)
 
-   livro = relationship("LivroModel", back_populates="emprestimos", lazy='joined')
-   usuario = relationship("UsuarioModel", back_populates='emprestimos', lazy='joined')
+   livro = relationship("LivroModel", back_populates ="emprestimo", lazy ='joined')
+   usuario = relationship("UsuarioModel", back_populates ="emprestimo", lazy ='joined')

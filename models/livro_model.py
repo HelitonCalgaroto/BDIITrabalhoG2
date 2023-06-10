@@ -10,5 +10,5 @@ class LivroModel(settings.DBBaseModel):
    id_categoria = Column(Integer, ForeignKey('categoria.id'))
    id_autor = Column(Integer, ForeignKey('autor.id'))
 
-   categoria = relationship('Categoria', back_populates='livros')
-   autor = relationship('Autor', back_populates='livros')
+   categoria = relationship('CategoriaModel', back_populates="livro")
+   autor = relationship('AutorModel', back_populates="livro")
