@@ -9,10 +9,11 @@ class UsuarioSchemaBase(BaseModel):
     
     class Config:
         orm_mode = True
-        
-        
+
 class UsuarioSchemaUp(UsuarioSchemaBase):
     nome: Optional[str]
     email: Optional[str]
     senha: Optional[str]
     
+class UsuarioSchemaCreate(UsuarioSchemaBase):
+    senha: str
