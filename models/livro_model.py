@@ -12,3 +12,5 @@ class LivroModel(settings.DBBaseModel):
 
    categoria = relationship('CategoriaModel', back_populates="livro")
    autor = relationship('AutorModel', back_populates="livro")
+   
+   emprestimo = relationship('EmprestimoModel', back_populates="livro")

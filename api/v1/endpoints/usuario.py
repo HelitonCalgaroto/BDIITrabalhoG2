@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.usuario_schema import UsuarioSchemaCreate, UsuarioSchemaUp, UsuariosSchema
-from models.usuario_model import UsuarioModel
+from schemas.usuario_schema import UsuarioSchemaCreate, UsuarioSchemaUp, UsuarioSchemaBase
+from models.usuarios_model import UsuarioModel
 
 from core.deps import get_session, get_current_user
 from core.security import gerar_hash_senha
@@ -15,17 +15,17 @@ from core.auth import autenticar, criar_token_acesso
 
 router = APIRouter()
 
-@router.get('/logado', response_model=UsuariosSchema)
+@router.get('/logado', response_model=UsuarioSchemaBase)
 def get_logado(usuario_logado: UsuarioModel = Depends(get_current_user)):
     return usuario_logado
 
-@router.post('/signup', status_code = status.HTTP_201_CREATED, response_model = UsuariosSchema)
+@router.post('/signup', status_code = status.HTTP_201_CREATED, response_model = UsuarioSchemaBase)
 async def post_usuario(usuario: UsuarioSchemaCreate, db: AsyncSession = Depends(get_session)):
     novo_usuario: UsuarioModel = UsuarioModel(
         nome = usuario.nome,
         email = usuario.email,
         senha = gerar_hash_senha,
-        eh_admin = usuario.eh_admin)
+        )
     async with db as session:
         try:
             session.add(novo_usuario)
@@ -45,22 +45,22 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
         "token_type": "bearer"
     }, status_code = status.HTTP_200_OK)
 
-@router.get('/', response_model=List[UsuariosSchema])
+@router.get('/', response_model=List[UsuarioSchemaBase])
 async def get_usuarios(db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(UsuarioModel)
         result = await session.execute(query)
-        usuarios: List[UsuariosSchema] = result.scalars().unique().all()
+        usuarios: List[UsuarioSchemaBase] = result.scalars().unique().all()
         return usuarios
     
 @router.get('/{usuario_id}', 
-            response_model=UsuariosSchema,
+            response_model=UsuarioSchemaBase,
             status_code=status.HTTP_200_OK)
 async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
-        usuario: UsuariosSchema = result.scalars().one_or_none()
+        usuario: UsuarioSchemaBase = result.scalars().one_or_none()
         
         if usuario:
             return usuario
@@ -69,14 +69,13 @@ async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
                                 status_code=status.HTTP_404_NOT_FOUND)
 
 @router.post('/singup', status_code=status.HTTP_201_CREATED,
-            response_model=UsuariosSchema)
+            response_model=UsuarioSchemaBase)
 async def post_usuario(usuario: UsuarioSchemaCreate,
                     db: AsyncSession = Depends(get_session)):
     novo_usuario: UsuarioModel = UsuarioModel(nome=usuario.nome,
-                                            sobrenome=usuario.sobrenome,
                                             email=usuario.email,
                                             senha=usuario.senha,
-                                            eh_admin=usuario.eh_admin)
+                                            )
     async with db as session:
         try:
             session.add(novo_usuario)
@@ -87,7 +86,7 @@ async def post_usuario(usuario: UsuarioSchemaCreate,
                                 detail='Ja existe esse e-mail cadastrado, {e}')
                 
 @router.put('/{usuario_id}',
-            response_model=UsuariosSchema,
+            response_model=UsuarioSchemaBase,
             status_code=status.HTTP_202_ACCEPTED)
 async def put_usuario(usuario_id: int,
                     usuario: UsuarioSchemaUp,
@@ -95,19 +94,15 @@ async def put_usuario(usuario_id: int,
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
-        usuario_up: UsuariosSchema = result.scalars().unique().one_or_none()
+        usuario_up: UsuarioSchemaBase = result.scalars().unique().one_or_none()
         
         if usuario_up:
             if usuario.nome:
-                usuario_up.nome = usuario.nome
-            if usuario.sobrenome:
-                usuario_up.sobrenome = usuario.sobrenome
+                usuario_up.nome = usuario.nome 
             if usuario.email:
                 usuario_up.email = usuario.email
             if usuario.senha:
                 usuario_up.senha = usuario.senha
-            if usuario.eh_admin:
-                usuario_up.eh_admin = usuario.eh_admin
             await session.commit()
             return usuario_up
         else:
@@ -119,7 +114,7 @@ async def delete_usuario(usuario_id: int, db: AsyncSession = Depends(get_session
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
-        usuario_del: UsuariosSchema = result.scalars().one_or_none()
+        usuario_del: UsuarioSchemaBase = result.scalars().one_or_none()
         
         if usuario_del:
             await session.delete(usuario_del)
@@ -129,12 +124,12 @@ async def delete_usuario(usuario_id: int, db: AsyncSession = Depends(get_session
             raise HTTPException(detail="Usuario nao encontrado",
                                 status_code=status.HTTP_404_NOT_FOUND)
 
-@router.get('/{usuario_id}', response_model=UsuariosSchema, status_code=status.HTTP_200_OK)
+@router.get('/{usuario_id}', response_model=UsuarioSchemaBase, status_code=status.HTTP_200_OK)
 async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
-        usuario: UsuariosSchema = result.scalars().one_or_none()
+        usuario: UsuarioSchemaBase = result.scalars().one_or_none()
 
         if usuario:
             return usuario

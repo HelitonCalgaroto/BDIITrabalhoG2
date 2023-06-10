@@ -11,5 +11,5 @@ class EmprestimoModel(settings.DBBaseModel):
    data_emprestimo = Column(DateTime)
    data_devolucao = Column(DateTime)
 
-   livro = relationship("LivroModel", back_populates ="emprestimo", lazy ='joined')
-   usuario = relationship("UsuarioModel", back_populates ="emprestimo", lazy ='joined')
+   livro = relationship("LivroModel", back_populates ="emprestimo")
+   usuario = relationship("UsuarioModel", back_populates ="emprestimo")

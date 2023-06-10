@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.categoria_schema import CategoriaSchema
-from models.categoria_model import CategoriaModel
+from models.categoria_models import CategoriaModel
 
 router = APIRouter()
 
@@ -21,9 +21,8 @@ async def get_categorias(db: AsyncSession = Depends(get_session)):
 @router.post('/create', status_code=status.HTTP_201_CREATED, response_model=None)
 async def post_categoria(categoria: CategoriaSchema,
                 db: AsyncSession = Depends(get_session)):
-    nova_categoria: CategoriaModel = CategoriaModel(descricao=categoria.descricao,
-                                                icone=categoria.icone,
-                                                ativa=categoria.ativa)
+    nova_categoria: CategoriaModel = CategoriaModel(nome=categoria.nome,
+                                                )
     async with db as session:
         try:
             session.add(nova_categoria)
@@ -45,12 +44,8 @@ async def put_categoria(categoria_id: int,
         categoria_up: CategoriaSchema = result.scalars().unique().one_or_none()
     
     if categoria_up:
-        if categoria.descricao:
-            categoria_up.descricao = categoria.descricao
-        if categoria.icone:
-            categoria_up.icone = categoria.icone
-        if categoria.ativa:
-            categoria_up.ativa = categoria.ativa
+        if categoria.nome:
+            categoria_up.nome = categoria.nome
         return categoria_up
     else:
         raise HTTPException(detail="Categoria não encontrada",
