@@ -8,4 +8,3 @@ class AutorSchema(BaseModel):
     
     class Config:
         orm_mode = True
-        
