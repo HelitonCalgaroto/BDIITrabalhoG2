@@ -59,7 +59,7 @@ async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
-        usuario: UsuarioSchemaBase = result.scalars().one_or_none()
+        usuario: UsuarioSchemaBase = result.scalars().unique().one_or_none()
         
         if usuario:
             return usuario
@@ -67,7 +67,7 @@ async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
             raise HTTPException(detail="Usuario nao encontrado",
                                 status_code=status.HTTP_404_NOT_FOUND)
 
-@router.post('/singup', status_code=status.HTTP_201_CREATED,
+@router.post('/create', status_code=status.HTTP_201_CREATED,
             response_model=UsuarioSchemaBase)
 async def post_usuario(usuario: UsuarioSchemaCreate,
                     db: AsyncSession = Depends(get_session)):
@@ -113,7 +113,7 @@ async def delete_usuario(usuario_id: int, db: AsyncSession = Depends(get_session
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
-        usuario_del: UsuarioSchemaBase = result.scalars().one_or_none()
+        usuario_del: UsuarioSchemaBase = result.scalars().unique().one_or_none()
         
         if usuario_del:
             await session.delete(usuario_del)
@@ -123,6 +123,7 @@ async def delete_usuario(usuario_id: int, db: AsyncSession = Depends(get_session
             raise HTTPException(detail="Usuario nao encontrado",
                                 status_code=status.HTTP_404_NOT_FOUND)
 
+#PQ QUE TEM 2 DESSE ?
 @router.get('/{usuario_id}', response_model=UsuarioSchemaBase, status_code=status.HTTP_200_OK)
 async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:

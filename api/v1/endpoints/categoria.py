@@ -51,7 +51,7 @@ async def put_categoria(categoria_id: int,
                             status_code=status.HTTP_404_NOT_FOUND)
 
 @router.delete('/{categoria_id}', status_code=status.HTTP_404_NOT_FOUND)
-async def delete_usuario(categoria_id: int, db: AsyncSession = Depends(get_session)):
+async def delete_categoria(categoria_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(CategoriaModel).filter(CategoriaModel.id == categoria_id)
         result = await session.execute(query)

@@ -1,5 +1,5 @@
 from pytz import timezone
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timedelta
 
 from fastapi.security import OAuth2PasswordBearer
