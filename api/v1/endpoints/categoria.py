@@ -20,9 +20,8 @@ async def get_categorias(db: AsyncSession = Depends(get_session)):
 @router.post('/create', status_code=status.HTTP_201_CREATED, response_model=None)
 async def post_categoria(categoria: CategoriaSchema,
                 db: AsyncSession = Depends(get_session)):
-    nova_categoria: CategoriaModel = CategoriaModel(descricao=categoria.descricao,
-                                                icone=categoria.icone,
-                                                ativa=categoria.ativa)
+    nova_categoria: CategoriaModel = CategoriaModel(nome=categoria.nome,
+                                                )
     async with db as session:
         try:
             session.add(nova_categoria)

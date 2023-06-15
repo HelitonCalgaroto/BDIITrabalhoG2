@@ -72,10 +72,9 @@ async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
 async def post_usuario(usuario: UsuarioSchemaCreate,
                     db: AsyncSession = Depends(get_session)):
     novo_usuario: UsuarioModel = UsuarioModel(nome=usuario.nome,
-                                            sobrenome=usuario.sobrenome,
                                             email=usuario.email,
                                             senha=usuario.senha,
-                                            eh_admin=usuario.eh_admin)
+                                            )
     async with db as session:
         try:
             session.add(novo_usuario)
@@ -98,15 +97,11 @@ async def put_usuario(usuario_id: int,
         
         if usuario_up:
             if usuario.nome:
-                usuario_up.nome = usuario.nome
-            if usuario.sobrenome:
-                usuario_up.sobrenome = usuario.sobrenome
+                usuario_up.nome = usuario.nome 
             if usuario.email:
                 usuario_up.email = usuario.email
             if usuario.senha:
                 usuario_up.senha = usuario.senha
-            if usuario.eh_admin:
-                usuario_up.eh_admin = usuario.eh_admin
             await session.commit()
             return usuario_up
         else:
