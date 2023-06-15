@@ -24,7 +24,7 @@ async def post_usuario(usuario: UsuarioSchemaCreate, db: AsyncSession = Depends(
     novo_usuario: UsuarioModel = UsuarioModel(
         nome = usuario.nome,
         email = usuario.email,
-        senha = gerar_hash_senha)
+        senha = gerar_hash_senha(usuario.senha))
     async with db as session:
         try:
             session.add(novo_usuario)
