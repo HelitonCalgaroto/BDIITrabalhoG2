@@ -5,7 +5,6 @@ class UsuarioSchemaBase(BaseModel):
     id: Optional[int] = None
     nome: str
     email: str
-   
     
     class Config:
         orm_mode = True
