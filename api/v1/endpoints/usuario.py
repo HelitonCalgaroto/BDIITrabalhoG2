@@ -93,7 +93,7 @@ async def put_usuario(usuario_id: int,
             if usuario.email:
                 usuario_up.email = usuario.email
             if usuario.senha:
-                usuario_up.senha = usuario.senha
+                usuario_up.senha = gerar_hash_senha(usuario.senha)
             return usuario_up
         else:
             raise HTTPException(detail="Usuario não encontrado",
