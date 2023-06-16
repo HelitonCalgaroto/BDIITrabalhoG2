@@ -19,8 +19,11 @@ async def get_emprestimos(db: AsyncSession = Depends(get_session)):
         return emprestimos
     
 
-@router.get('/{emprestimo_id}', status_code=status.HTTP_200_CREATED, response_model=EmprestimoSchemaBase)
-async def get_emprestimo(emprestimo_id: int, db: AsyncSession = Depends(get_session)):
+@router.get('/{emprestimo_id}', 
+            status_code=status.HTTP_201_CREATED, 
+            response_model=EmprestimoSchemaBase)
+async def get_emprestimo(emprestimo_id: int, 
+                         db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(EmprestimoModel).filter(EmprestimoModel.id == emprestimo_id)
         result = await session.execute(query)
@@ -32,8 +35,11 @@ async def get_emprestimo(emprestimo_id: int, db: AsyncSession = Depends(get_sess
             raise HTTPException(detail="Emprestimo não encontrado",status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.post('/signup', status_code=status.HTTP_201_CREATED, response_model=EmprestimoSchemaBase)
-async def post_emprestimo(emprestimo: EmprestimoSchemaUp, db: AsyncSession = Depends(get_session)):
+@router.post('/signup', 
+             status_code=status.HTTP_201_CREATED, 
+             response_model=EmprestimoSchemaBase)
+async def post_emprestimo(emprestimo: EmprestimoSchemaUp, 
+                          db: AsyncSession = Depends(get_session)):
     novo_emprestimo: EmprestimoModel = EmprestimoModel(id_livro=emprestimo.id_livro,
                                                        id_usuario=emprestimo.id_usuario,
                                                        data_emprestimo=emprestimo.data_emprestimo,
@@ -48,8 +54,12 @@ async def post_emprestimo(emprestimo: EmprestimoSchemaUp, db: AsyncSession = Dep
                                 detail=f"Emprestimo já existente, {e}")
             
 
-@router.put('/{emprestimo_id}', status_code=status.HTTP_202_ACCEPTED, response_model=EmprestimoSchemaBase)
-async def put_emprestimo(emprestimo_id: int, emprestimo: EmprestimoSchemaUp, db: AsyncSession = Depends(get_session)):
+@router.put('/{emprestimo_id}', 
+            status_code=status.HTTP_202_ACCEPTED, 
+            response_model=EmprestimoSchemaBase)
+async def put_emprestimo(emprestimo_id: int, 
+                         emprestimo: EmprestimoSchemaUp, 
+                         db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(EmprestimoModel).filter(EmprestimoModel.id == emprestimo_id)
         result = await session.execute(query)
@@ -71,7 +81,8 @@ async def put_emprestimo(emprestimo_id: int, emprestimo: EmprestimoSchemaUp, db:
             
             
 @router.delete('/{emprestimo_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_emprestimo(emprestimo_id: int, db: AsyncSession = Depends(get_session)):
+async def delete_emprestimo(emprestimo_id: int, 
+                            db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(EmprestimoModel).filter(EmprestimoModel.id == emprestimo_id)
         result = await session.execute(query)

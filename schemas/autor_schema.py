@@ -9,6 +9,5 @@ class AutorSchemaBase(BaseModel):
     class Config:
         orm_mode = True
 
-
 class AutorSchemaUp(AutorSchemaBase):
     nome: Optional[str]
