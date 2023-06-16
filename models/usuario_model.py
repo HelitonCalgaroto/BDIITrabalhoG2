@@ -16,5 +16,5 @@ class UsuarioModel(Settings.DBBaseModel):
                                 cascade="all, delete-orphan", 
                                 back_populates="usuario", 
                                 uselist=True, 
-                                lazy='joined')
-    
+                                lazy='joined'
+                                )
