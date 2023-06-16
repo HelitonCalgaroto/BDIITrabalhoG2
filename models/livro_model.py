@@ -14,7 +14,7 @@ class LivroModel(Settings.DBBaseModel):
    categoria = relationship('CategoriaModel', back_populates="livro")
    autor = relationship('AutorModel', back_populates="livro")
    emprestimo = relationship("EmprestimoModel", 
-                              cascade="all, delete-orphan", 
-                              back_populates="livro", 
-                              uselist=True, 
-                              lazy='joined')
+                             cascade="all, delete-orphan", 
+                             back_populates="livro", 
+                             uselist=True, 
+                             lazy='joined')

@@ -7,8 +7,7 @@ from core.deps import get_session
 from models.emprestimo_model import EmprestimoModel
 from schemas.emprestimo_schema import EmprestimoSchemaBase, EmprestimoSchemaUp
 
-
-router =APIRouter()
+router = APIRouter()
 
 
 @router.get('/', response_model=List[EmprestimoSchemaBase])
