@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class CategoriaSchema(BaseModel):
     id: Optional[int] = None
-    descricao: str
+    nome: str
     
     class Config:
         orm_mode = True
