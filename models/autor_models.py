@@ -9,3 +9,4 @@ class AutorModel(Settings.DBBaseModel):
     nome = Column(String(255), nullable=False)
 
     livro = relationship('LivroModel', back_populates="autor")
+    

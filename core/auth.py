@@ -1,5 +1,5 @@
 from pytz import timezone
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timedelta
 
 from fastapi.security import OAuth2PasswordBearer
@@ -51,6 +51,6 @@ def criar_token_acesso(sub: str) -> str:
    # https://jwt.io
    return _criar_token(
       tipo_token = 'acess_token',
-      tempo_vida=timedelta(minutes=settings.ACESS_TOKEN_EXPIRE_MINUTS),
+      tempo_vida=timedelta(minutes=settings.ACESS_TOKEN_EXPIRE_MINUTES),
       sub=sub
    )

@@ -17,3 +17,4 @@ class UsuarioModel(Settings.DBBaseModel):
                                 back_populates="usuario", 
                                 uselist=True, 
                                 lazy='joined')
+    

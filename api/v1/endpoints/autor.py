@@ -5,75 +5,83 @@ from core.deps import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.autor_models import AutorModel
-from schemas.autor_schema import AutorSchema
+from schemas.autor_schema import AutorSchemaBase, AutorSchemaUp
+
 router = APIRouter()
 
-@router.get('/', response_model=None)
 
+@router.get('/', response_model=List[AutorSchemaBase])
 async def get_autores(db: AsyncSession = Depends(get_session)):
     async with db as session:
             query = select(AutorModel)
             result = await session.execute(query)
-            autores: List[AutorSchema] = result.scalars().unique().all()
+            autores: List[AutorSchemaBase] = result.scalars().unique().all()
             return autores
 
-@router.get('/{autor_id}', response_model=None, status_code=status.HTTP_200_OK)
+
+@router.get('/{autor_id}', 
+            response_model=AutorSchemaBase, 
+            status_code=status.HTTP_200_OK)
 async def get_autor(autor_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AutorModel).filter(AutorModel.id == autor_id)
         result = await session.execute(query)
-        autor: AutorSchema = result.scalars().one_or_none()
+        autor: AutorSchemaBase = result.scalars().one_or_none()
 
     if autor:
         return autor
     else:
-        raise HTTPException(detail="Autor não encontrado", status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(detail="Autor não encontrado", 
+                            status_code=status.HTTP_404_NOT_FOUND)
 
-@router.post('/create', status_code=status.HTTP_201_CREATED, response_model=None)
-async def post_autores(autor: AutorSchema,
-                db: AsyncSession = Depends(get_session)):
-    nova_autor: AutorModel = AutorModel(nome=autor.nome,
-                                                )
+
+@router.post('/create', 
+             status_code=status.HTTP_201_CREATED, 
+             response_model=AutorSchemaBase)
+async def post_autores(autor: AutorSchemaUp, 
+                       db: AsyncSession = Depends(get_session)):
+    novo_autor: AutorModel = AutorModel(nome=autor.nome)
     async with db as session:
         try:
-            session.add(nova_autor)
+            session.add(novo_autor)
             await session.commit()
-            return nova_autor
+            return novo_autor
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                                detail='Ja existe essa autor cadastrada, {e}')
+                                detail=f'Autor já existe, {e}')
+
 
 @router.put('/{autor_id}',
-            response_model=None,
+            response_model=AutorSchemaBase,
             status_code=status.HTTP_202_ACCEPTED)
-async def put_autor(autor_id: int,
-                        autor: AutorSchema,
-                        db: AsyncSession = Depends(get_session)):
+async def put_autor(autor_id: int, 
+                    autor: AutorSchemaUp, 
+                    db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AutorModel).filter(AutorModel.id == autor_id)
         result = await session.execute(query)
-        autor_up: AutorSchema = result.scalars().unique().one_or_none()
+        autor_up: AutorSchemaBase = result.scalars().unique().one_or_none()
     
     if autor_up:
         if autor.nome:
             autor_up.nome = autor.nome
         return autor_up
     else:
-        raise HTTPException(detail="Autor não encontrada",
+        raise HTTPException(detail="Autor não encontrado",
                             status_code=status.HTTP_404_NOT_FOUND)
 
-@router.delete('/{autor_id}', status_code=status.HTTP_404_NOT_FOUND)
+
+@router.delete('/{autor_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_autor(autor_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AutorModel).filter(AutorModel.id == autor_id)
         result = await session.execute(query)
-        autor_del: AutorSchema = result.scalars().one_or_none()
+        autor_del: AutorSchemaBase = result.scalars().one_or_none()
 
     if autor_del:
         await session.delete(autor_del)
         await session.commit()
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
-        raise HTTPException(detail="Autor não encontrada",
+        raise HTTPException(detail="Autor não encontrado",
                             status_code=status.HTTP_404_NOT_FOUND)
-

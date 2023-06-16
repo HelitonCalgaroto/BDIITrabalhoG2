@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     JWT_SECRET: str = 'GjiJz4N4uHnVP4xFDAaipU2ExjjVekeaKxBuSlCqkfk'
     ALGORITHM: str = 'HS256'
-    ACESS_TOKEN_EXPIRE_MINUTS: int = 7 * 24 * 60
+    ACESS_TOKEN_EXPIRE_MINUTES: int = 7 * 24 * 60
     
     class Config:
         case_sensitive = True
