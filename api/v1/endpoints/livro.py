@@ -24,7 +24,7 @@ async def get_livro(livro_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(LivroModel).filter(LivroModel.id == livro_id)
         result = await session.execute(query)
-        livro: LivroSchema = result.scalars().one_or_none()
+        livro: LivroSchema = result.scalars().unique().one_or_none()
 
     if livro:
         return livro
@@ -40,13 +40,13 @@ async def post_livro(livro: LivroSchema,
     if not categoria:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Categoria não encontrada')
-          
+
     autor = await db.get(AutorModel, livro.id_autor)
 
     if not autor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Autor não encontrada')
-    
+
     nova_livro: LivroModel = LivroModel(titulo=livro.titulo,
                                         categoria=categoria,
                                         autor=autor
@@ -93,7 +93,7 @@ async def delete_livro(livro_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(LivroModel).filter(LivroModel.id == livro_id)
         result = await session.execute(query)
-        livro_del: LivroSchema = result.scalars().one_or_none()
+        livro_del: LivroSchema = result.scalars().unique().one_or_none()
 
     if livro_del:
         await session.delete(livro_del)
