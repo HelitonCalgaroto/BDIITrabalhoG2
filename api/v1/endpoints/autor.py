@@ -16,7 +16,12 @@ async def get_autores(db: AsyncSession = Depends(get_session)):
             query = select(AutorModel)
             result = await session.execute(query)
             autores: List[AutorSchemaBase] = result.scalars().unique().all()
-            return autores
+
+    if autores:
+        return autores
+    else:
+        raise HTTPException(detail="Nenhuma autor foi encontrado!",
+                            status_code=status.HTTP_404_NOT_FOUND)
 
 
 @router.get('/{autor_id}', 
@@ -36,10 +41,10 @@ async def get_autor(autor_id: int, db: AsyncSession = Depends(get_session)):
 
 
 @router.post('/create', 
-             status_code=status.HTTP_201_CREATED, 
-             response_model=AutorSchemaBase)
+            status_code=status.HTTP_201_CREATED, 
+            response_model=AutorSchemaBase)
 async def post_autores(autor: AutorSchemaUp, 
-                       db: AsyncSession = Depends(get_session)):
+                        db: AsyncSession = Depends(get_session)):
     novo_autor: AutorModel = AutorModel(nome=autor.nome)
     async with db as session:
         try:

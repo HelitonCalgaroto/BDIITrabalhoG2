@@ -5,8 +5,10 @@ from core.deps import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.livro_model import LivroModel
-from models.categoria_models import CategoriaModel
+
 from models.autor_models import AutorModel
+from models.categoria_models import CategoriaModel
+
 from schemas.livro_schema import LivroSchemaBase, LivroSchemaUp
 
 router = APIRouter()
@@ -18,8 +20,12 @@ async def get_livros(db: AsyncSession = Depends(get_session)):
             query = select(LivroModel)
             result = await session.execute(query)
             livros: List[LivroSchemaBase] = result.scalars().unique().all()
-            return livros
 
+    if livros:
+        return livros
+    else:
+        raise HTTPException(detail="Nenhum livro foi encontrado!",
+                            status_code=status.HTTP_404_NOT_FOUND)
 
 @router.get('/{livro_id}', 
             response_model=LivroSchemaBase, 
@@ -38,13 +44,26 @@ async def get_livro(livro_id: int, db: AsyncSession = Depends(get_session)):
 
 
 @router.post('/create', 
-             status_code=status.HTTP_201_CREATED, 
-             response_model=LivroSchemaBase)
+            status_code=status.HTTP_201_CREATED, 
+            response_model=LivroSchemaBase)
 async def post_livro(livro: LivroSchemaUp,
-                     db: AsyncSession = Depends(get_session)):    
+                    db: AsyncSession = Depends(get_session)):
+
+    categoria = await db.get(CategoriaModel, livro.id_categoria)
+
+    if not categoria:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Categoria não encontrada')
+
+    autor = await db.get(AutorModel, livro.id_autor)
+
+    if not autor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Autor não encontrada')
+
     novo_livro: LivroModel = LivroModel(titulo=livro.titulo,
-                                        categoria=livro.id_categoria,
-                                        autor=livro.id_autor)
+                                        categoria=categoria,
+                                        autor=autor)
     async with db as session:
         try:
             session.add(novo_livro)
@@ -65,7 +84,7 @@ async def put_livro(livro_id: int,
         query = select(LivroModel).filter(LivroModel.id == livro_id)
         result = await session.execute(query)
         livro_up: LivroSchemaBase = result.scalars().unique().one_or_none()
-    
+
     if livro_up:
         if livro.titulo:
             livro_up.titulo = livro.titulo
@@ -73,9 +92,10 @@ async def put_livro(livro_id: int,
             livro_up.id_categoria = livro.id_categoria
         if livro.id_autor:
             livro_up.id_autor = livro.id_autor
+        await session.commit()
         return livro_up
     else:
-        raise HTTPException(detail="Livro não encontrada",
+        raise HTTPException(detail="Livro não encontrado",
                             status_code=status.HTTP_404_NOT_FOUND)
 
 

@@ -16,14 +16,18 @@ async def get_emprestimos(db: AsyncSession = Depends(get_session)):
         query = select(EmprestimoModel)
         result = await session.execute(query)
         emprestimos: List[EmprestimoSchemaBase] = result.scalars().all()
+
+    if emprestimos:
         return emprestimos
-    
+    else:
+        raise HTTPException(detail="Nenhum empréstimo foi encontrado!",
+                            status_code=status.HTTP_404_NOT_FOUND)
 
 @router.get('/{emprestimo_id}', 
             status_code=status.HTTP_201_CREATED, 
             response_model=EmprestimoSchemaBase)
 async def get_emprestimo(emprestimo_id: int, 
-                         db: AsyncSession = Depends(get_session)):
+                        db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(EmprestimoModel).filter(EmprestimoModel.id == emprestimo_id)
         result = await session.execute(query)
@@ -36,14 +40,14 @@ async def get_emprestimo(emprestimo_id: int,
 
 
 @router.post('/signup', 
-             status_code=status.HTTP_201_CREATED, 
-             response_model=EmprestimoSchemaBase)
+            status_code=status.HTTP_201_CREATED, 
+            response_model=EmprestimoSchemaBase)
 async def post_emprestimo(emprestimo: EmprestimoSchemaUp, 
-                          db: AsyncSession = Depends(get_session)):
+                            db: AsyncSession = Depends(get_session)):
     novo_emprestimo: EmprestimoModel = EmprestimoModel(id_livro=emprestimo.id_livro,
-                                                       id_usuario=emprestimo.id_usuario,
-                                                       data_emprestimo=emprestimo.data_emprestimo,
-                                                       data_devolucao=emprestimo.data_devolucao)
+                                                        id_usuario=emprestimo.id_usuario,
+                                                        data_emprestimo=emprestimo.data_emprestimo,
+                                                        data_devolucao=emprestimo.data_devolucao)
     async with db as session:
         try:
             session.add(novo_emprestimo)
@@ -58,8 +62,8 @@ async def post_emprestimo(emprestimo: EmprestimoSchemaUp,
             status_code=status.HTTP_202_ACCEPTED, 
             response_model=EmprestimoSchemaBase)
 async def put_emprestimo(emprestimo_id: int, 
-                         emprestimo: EmprestimoSchemaUp, 
-                         db: AsyncSession = Depends(get_session)):
+                        emprestimo: EmprestimoSchemaUp, 
+                        db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(EmprestimoModel).filter(EmprestimoModel.id == emprestimo_id)
         result = await session.execute(query)

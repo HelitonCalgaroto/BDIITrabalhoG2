@@ -16,8 +16,12 @@ async def get_categorias(db: AsyncSession = Depends(get_session)):
             query = select(CategoriaModel)
             result = await session.execute(query)
             categorias: List[CategoriaSchemaBase] = result.scalars().unique().all()
-            return categorias
-        
+
+    if categorias:
+        return categorias
+    else:
+        raise HTTPException(detail="Nenhuma categoria foi encontrada!",
+                            status_code=status.HTTP_404_NOT_FOUND)
 
 @router.get('/{categoria_id}', 
             response_model=CategoriaSchemaBase, 
@@ -31,15 +35,15 @@ async def get_categoria(categoria_id: int, db: AsyncSession = Depends(get_sessio
     if categoria:
         return categoria
     else:
-        raise HTTPException(detail="Usuario não encontrado", 
+        raise HTTPException(detail="Categoria não encontrada!", 
                             status_code=status.HTTP_404_NOT_FOUND)
 
 
 @router.post('/create', 
-             status_code=status.HTTP_201_CREATED, 
-             response_model=CategoriaSchemaBase)
+            status_code=status.HTTP_201_CREATED, 
+            response_model=CategoriaSchemaBase)
 async def post_categoria(categoria: CategoriaSchemaUp,
-                         db: AsyncSession = Depends(get_session)):
+                        db: AsyncSession = Depends(get_session)):
     nova_categoria: CategoriaModel = CategoriaModel(nome=categoria.nome)
     async with db as session:
         try:
@@ -73,7 +77,7 @@ async def put_categoria(categoria_id: int,
 
 @router.delete('/{categoria_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_categoria(categoria_id: int, 
-                           db: AsyncSession = Depends(get_session)):
+                            db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(CategoriaModel).filter(CategoriaModel.id == categoria_id)
         result = await session.execute(query)
