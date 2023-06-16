@@ -5,6 +5,8 @@ from core.deps import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.livro_model import LivroModel
+from models.categoria_models import CategoriaModel
+from models.autor_models import AutorModel
 from schemas.livro_schema import LivroSchema
 
 router = APIRouter()
@@ -32,9 +34,22 @@ async def get_livro(livro_id: int, db: AsyncSession = Depends(get_session)):
 @router.post('/create', status_code=status.HTTP_201_CREATED, response_model=None)
 async def post_livro(livro: LivroSchema,
                 db: AsyncSession = Depends(get_session)):
+    
+    categoria = await db.get(CategoriaModel, livro.id_categoria)
+
+    if not categoria:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Categoria não encontrada')
+          
+    autor = await db.get(AutorModel, livro.id_autor)
+
+    if not autor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Autor não encontrada')
+    
     nova_livro: LivroModel = LivroModel(titulo=livro.titulo,
-                                        categoria=livro.id_categoria,
-                                        autor=livro.id_autor
+                                        categoria=categoria,
+                                        autor=autor
                                                 )
     async with db as session:
         try:
@@ -59,15 +74,16 @@ async def put_livro(livro_id: int,
     if livro_up:
         if livro.titulo:
             livro_up.titulo = livro.titulo
-            return livro_up
+            
             
         if livro.id_categoria:
             livro_up.id_categoria = livro.id_categoria
-            return livro_up
+            
         
         if livro.id_autor:
             livro_up.id_autor = livro.id_autor
-            return livro_up
+            
+        return livro_up
     else:
         raise HTTPException(detail="Livro não encontrada",
                             status_code=status.HTTP_404_NOT_FOUND)
