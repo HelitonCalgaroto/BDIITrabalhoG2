@@ -89,7 +89,7 @@ async def put_usuario(usuario_id: int,
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
         usuario_up: UsuarioSchemaBase = result.scalars().unique().one_or_none()
-        
+
         if usuario_up:
             if usuario.nome:
                 usuario_up.nome = usuario.nome 
@@ -97,6 +97,7 @@ async def put_usuario(usuario_id: int,
                 usuario_up.email = usuario.email
             if usuario.senha:
                 usuario_up.senha = gerar_hash_senha(usuario.senha)
+            await session.commit()
             return usuario_up
         else:
             raise HTTPException(detail="Usuario não encontrado",

@@ -20,7 +20,7 @@ async def get_autores(db: AsyncSession = Depends(get_session)):
     if autores:
         return autores
     else:
-        raise HTTPException(detail="Nenhuma autor foi encontrado!",
+        raise HTTPException(detail="Nenhum autor foi encontrado!",
                             status_code=status.HTTP_404_NOT_FOUND)
 
 
@@ -70,6 +70,8 @@ async def put_autor(autor_id: int,
     if autor_up:
         if autor.nome:
             autor_up.nome = autor.nome
+        await session.merge(autor_up)
+        await session.commit()
         return autor_up
     else:
         raise HTTPException(detail="Autor não encontrado",
