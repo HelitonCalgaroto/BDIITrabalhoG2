@@ -63,7 +63,8 @@ async def post_livro(livro: LivroSchemaUp,
 
     novo_livro: LivroModel = LivroModel(titulo=livro.titulo,
                                         categoria=categoria,
-                                        autor=autor)
+                                        autor=autor,
+                                        imagem=livro.imagem)
     async with db as session:
         try:
             session.add(novo_livro)
@@ -92,6 +93,8 @@ async def put_livro(livro_id: int,
             livro_up.id_categoria = livro.id_categoria
         if livro.id_autor:
             livro_up.id_autor = livro.id_autor
+        if livro.imagem:
+            livro_up.imagem = livro.imagem
         await session.merge(livro_up)
         await session.commit()
         return livro_up
