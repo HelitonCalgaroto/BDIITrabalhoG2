@@ -6,6 +6,7 @@ class LivroSchemaBase(BaseModel):
     titulo: str
     id_categoria: int
     id_autor: int
+    imagem: str
 
     class Config:
         orm_mode = True
@@ -14,3 +15,4 @@ class LivroSchemaUp(LivroSchemaBase):
     titulo: Optional[str]
     id_categoria: Optional[int]
     id_autor: Optional[int]
+    imagem: Optional[str]

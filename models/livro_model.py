@@ -1,5 +1,4 @@
-from models.autor_models import AutorModel
-from sqlalchemy import Column, Integer, ForeignKey, String
+from sqlalchemy import Column, Integer, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 from core.configs import Settings
 
@@ -10,6 +9,7 @@ class LivroModel(Settings.DBBaseModel):
    titulo = Column(String(255), nullable=False)
    id_categoria = Column(Integer, ForeignKey('categoria.id'))
    id_autor = Column(Integer, ForeignKey('autor.id'))
+   imagem = Column(Text, nullable=True)
 
    categoria = relationship('CategoriaModel', back_populates="livro")
    autor = relationship('AutorModel', back_populates="livro")
