@@ -10,7 +10,7 @@ from models.categoria_models import CategoriaModel
 router = APIRouter()
 
 
-@router.get('/', response_model=CategoriaSchemaBase)
+@router.get('/', response_model=List[CategoriaSchemaBase])
 async def get_categorias(db: AsyncSession = Depends(get_session)):
     async with db as session:
             query = select(CategoriaModel)
@@ -65,10 +65,12 @@ async def put_categoria(categoria_id: int,
         query = select(CategoriaModel).filter(CategoriaModel.id == categoria_id)
         result = await session.execute(query)
         categoria_up: CategoriaSchemaBase = result.scalars().unique().one_or_none()
-    
+
     if categoria_up:
         if categoria.nome:
             categoria_up.nome = categoria.nome
+        await session.merge(categoria_up)
+        await session.commit()
         return categoria_up
     else:
         raise HTTPException(detail="Categoria não encontrada",

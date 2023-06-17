@@ -67,8 +67,8 @@ async def put_emprestimo(emprestimo_id: int,
     async with db as session:
         query = select(EmprestimoModel).filter(EmprestimoModel.id == emprestimo_id)
         result = await session.execute(query)
-        emprestimo_up: EmprestimoSchemaBase = result.scalars().one_or_none()
-        
+        emprestimo_up: EmprestimoSchemaBase = result.scalars().unique().one_or_none()
+
         if emprestimo_up:
             if emprestimo.id_livro:
                 emprestimo.id_livro = emprestimo.id_livro
@@ -78,6 +78,8 @@ async def put_emprestimo(emprestimo_id: int,
                 emprestimo.data_emprestimo = emprestimo.data_emprestimo
             if emprestimo.data_devolucao:
                 emprestimo.data_devolucao = emprestimo.data_devolucao
+            await session.merge(emprestimo_up)
+            await session.commit()
             return emprestimo_up
         else:
             raise HTTPException(detail="Emprestimo não encontrado", 
