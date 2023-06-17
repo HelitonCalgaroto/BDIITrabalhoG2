@@ -71,13 +71,14 @@ async def put_emprestimo(emprestimo_id: int,
 
         if emprestimo_up:
             if emprestimo.id_livro:
-                emprestimo.id_livro = emprestimo.id_livro
+                emprestimo_up.id_livro = emprestimo.id_livro
             if emprestimo.id_usuario:
-                emprestimo.id_usuario = emprestimo.id_usuario
+                emprestimo_up.id_usuario = emprestimo.id_usuario
             if emprestimo.data_emprestimo:
-                emprestimo.data_emprestimo = emprestimo.data_emprestimo
+                emprestimo_up.data_emprestimo = emprestimo.data_emprestimo
             if emprestimo.data_devolucao:
-                emprestimo.data_devolucao = emprestimo.data_devolucao
+                emprestimo_up.data_devolucao = emprestimo.data_devolucao
+                
             await session.merge(emprestimo_up)
             await session.commit()
             return emprestimo_up
